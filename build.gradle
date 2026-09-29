@@ -1,16 +1,15 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.1.1'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
 }
 
-group = 'ra'
-version = '0.0.1-SNAPSHOT'
-description = 'billing-service'
+group = 'com.quickbite'
+version = '1.0.0'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
@@ -18,50 +17,28 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    set('springCloudVersion', "2025.1.2")
-}
-
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    implementation 'org.springframework.boot:spring-boot-starter-amqp'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    testImplementation 'org.springframework.amqp:spring-rabbit-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-cache-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    testCompileOnly 'org.projectlombok:lombok'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testAnnotationProcessor 'org.projectlombok:lombok'
-    // Source: https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
-    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-    // Source: https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
-    // Source: https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
-    // Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-cache
-    implementation("org.springframework.boot:spring-boot-starter-cache:4.1.0")
-    // Source: https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter
-    implementation("org.redisson:redisson-spring-boot-starter:4.6.1")
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly   'org.postgresql:postgresql'
+
+    // Session 07: cho phep CI chay unit test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+// Bat buoc de Gradle chay duoc JUnit 5. Thieu dong nay, lenh ./gradlew test
+// bao "no tests found" du da co file test.
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'skipped', 'failed'
     }
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+// QUAN TRONG: ep ten file JAR co dinh la "user-service.jar".
+// Mac dinh Gradle sinh ra "user-service-1.0.0.jar" (co kem version),
+// se khong khop voi dong COPY build/libs/user-service.jar trong Dockerfile.
+bootJar {
+    archiveFileName = 'user-service.jar'
 }
